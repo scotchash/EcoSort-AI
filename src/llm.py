@@ -1,26 +1,63 @@
 import os
 
+import streamlit as st
+
 from dotenv import load_dotenv
 from ibm_watsonx_ai import Credentials
 from ibm_watsonx_ai.foundation_models import ModelInference
 
 
+# Load local .env when running on your computer
 load_dotenv()
 
 
-API_KEY = os.getenv("WATSONX_APIKEY")
-PROJECT_ID = os.getenv("WATSONX_PROJECT_ID")
-WATSONX_URL = os.getenv("WATSONX_URL")
+def get_secret(name):
+
+    # 1. Try environment variable / local .env
+    value = os.getenv(name)
+
+    if value:
+        return value
+
+    # 2. Try Streamlit Cloud Secrets
+    try:
+        return st.secrets[name]
+    except Exception:
+        return None
+
+
+API_KEY = get_secret(
+    "WATSONX_APIKEY"
+)
+
+PROJECT_ID = get_secret(
+    "WATSONX_PROJECT_ID"
+)
+
+WATSONX_URL = get_secret(
+    "WATSONX_URL"
+)
 
 
 if not API_KEY:
-    raise ValueError("WATSONX_APIKEY is missing from .env")
+    raise ValueError(
+        "WATSONX_APIKEY is missing from "
+        "environment variables or Streamlit Secrets."
+    )
+
 
 if not PROJECT_ID:
-    raise ValueError("WATSONX_PROJECT_ID is missing from .env")
+    raise ValueError(
+        "WATSONX_PROJECT_ID is missing from "
+        "environment variables or Streamlit Secrets."
+    )
+
 
 if not WATSONX_URL:
-    raise ValueError("WATSONX_URL is missing from .env")
+    raise ValueError(
+        "WATSONX_URL is missing from "
+        "environment variables or Streamlit Secrets."
+    )
 
 
 class EcoSortLLM:
